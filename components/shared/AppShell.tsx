@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, CalendarDays, MessageCircle, LogOut, ChevronDown, User, Briefcase, Inbox } from 'lucide-react'
+import { Compass, CalendarDays, LogOut, ChevronDown, User, Briefcase, Inbox, MessageCircle } from 'lucide-react'
 import type { Profile } from '@/types/user'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -15,7 +15,6 @@ type Props = { profile: Profile; children: React.ReactNode }
 const HOST_NAV = [
   { href: '/dashboard', label: 'Explorar', icon: Compass },
   { href: '/events', label: 'Mis Eventos', icon: CalendarDays },
-  { href: '/bookings', label: 'Conversaciones', icon: MessageCircle },
 ]
 
 const PROVIDER_NAV = [

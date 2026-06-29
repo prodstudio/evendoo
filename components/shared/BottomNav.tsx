@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, CalendarDays, MessageCircle, User, Briefcase, Heart, Inbox } from 'lucide-react'
+import { Compass, CalendarDays, MessageCircle, User, Briefcase, Heart, Inbox } from 'lucide-react' // MessageCircle kept for PROVIDER_TABS
 
 type Tab = { href: string; label: string; icon: React.ElementType }
 
@@ -10,7 +10,6 @@ const HOST_TABS: Tab[] = [
   { href: '/marketplace', label: 'Explorar', icon: Compass },
   { href: '/events', label: 'Mis Eventos', icon: CalendarDays },
   { href: '/favorites', label: 'Guardados', icon: Heart },
-  { href: '/bookings', label: 'Chat', icon: MessageCircle },
   { href: '/profile', label: 'Perfil', icon: User },
 ]
 
