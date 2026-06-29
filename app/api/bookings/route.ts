@@ -9,10 +9,13 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ data: null, error: { code: 'UNAUTHENTICATED', message: 'Iniciá sesión para continuar' } } satisfies ApiResponse<null>, { status: 401 })
 
     const body = await req.json()
-    const { listing_id, event_date, event_type, event_zone, description } = body
+    const {
+      listing_id, event_date, event_type, event_zone, description,
+      event_id, event_title, estimated_guests, budget_cents,
+    } = body
 
     // Get listing to find provider_id
-    const { data: listing } = await supabase.from('provider_listings').select('provider_id').eq('id', listing_id).single()
+    const { data: listing } = await supabase.from('provider_listings').select('provider_id, title').eq('id', listing_id).single()
     if (!listing) return NextResponse.json({ data: null, error: { code: 'NOT_FOUND', message: 'Proveedor no encontrado' } } satisfies ApiResponse<null>, { status: 404 })
 
     // Check for existing booking
@@ -24,7 +27,8 @@ export async function POST(req: NextRequest) {
 
     const { data: booking, error } = await supabase.from('bookings').insert({
       host_id: user.id, provider_id: listing.provider_id,
-      listing_id, event_date, event_type, event_zone, description, status: 'pending'
+      listing_id, event_date, event_type, event_zone, description, status: 'pending',
+      ...(event_id ? { event_id } : {}),
     }).select().single()
 
     if (error) {
@@ -33,6 +37,29 @@ export async function POST(req: NextRequest) {
       }
       throw error
     }
+
+    // Insert initial message with event summary so the chat opens with context
+    const dateStr = new Date(event_date).toLocaleDateString('es-AR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    })
+    const lines = [
+      `📋 *Solicitud de servicio: ${listing.title}*`,
+      '',
+      `🎉 Evento: ${event_title ?? event_type}`,
+      `🗓 Fecha: ${dateStr}`,
+      `📍 Zona: ${event_zone}`,
+      estimated_guests ? `👥 Invitados: ${estimated_guests}` : null,
+      budget_cents ? `💰 Presupuesto: $${(budget_cents / 100).toLocaleString('es-AR')}` : null,
+      description ? '' : null,
+      description ? `💬 ${description}` : null,
+    ].filter(l => l !== null)
+
+    await supabase.from('messages').insert({
+      booking_id: booking.id,
+      sender_id: user.id,
+      body: lines.join('\n'),
+    })
+
     return NextResponse.json({ data: booking, error: null } satisfies ApiResponse<typeof booking>)
   } catch {
     return NextResponse.json({ data: null, error: { code: 'INTERNAL', message: 'No pudimos crear la propuesta' } } satisfies ApiResponse<null>, { status: 500 })

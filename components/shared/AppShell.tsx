@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, CalendarDays, MessageCircle, LogOut, ChevronDown } from 'lucide-react'
+import { Compass, CalendarDays, MessageCircle, LogOut, ChevronDown, User, Briefcase, Inbox } from 'lucide-react'
 import type { Profile } from '@/types/user'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -12,10 +12,18 @@ import { useState, useRef, useEffect } from 'react'
 
 type Props = { profile: Profile; children: React.ReactNode }
 
-const NAV = [
+const HOST_NAV = [
   { href: '/dashboard', label: 'Explorar', icon: Compass },
   { href: '/events', label: 'Mis Eventos', icon: CalendarDays },
   { href: '/bookings', label: 'Conversaciones', icon: MessageCircle },
+]
+
+const PROVIDER_NAV = [
+  { href: '/dashboard', label: 'Explorar', icon: Compass },
+  { href: '/proposals', label: 'Propuestas', icon: Inbox },
+  { href: '/listings', label: 'Mis servicios', icon: Briefcase },
+  { href: '/bookings', label: 'Conversaciones', icon: MessageCircle },
+  { href: '/events', label: 'Mis Eventos', icon: CalendarDays },
 ]
 
 export function AppShell({ profile, children }: Props) {
@@ -23,6 +31,7 @@ export function AppShell({ profile, children }: Props) {
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const NAV = profile.is_provider ? PROVIDER_NAV : HOST_NAV
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -73,6 +82,12 @@ export function AppShell({ profile, children }: Props) {
                 <p className="font-semibold text-sm truncate" style={{ color: '#1C0F0A' }}>{profile.full_name}</p>
                 <p className="text-xs" style={{ color: '#8C7B75' }}>{profile.is_provider ? 'Host · Proveedor' : 'Host'}</p>
               </div>
+              <Link href="/profile" onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 w-full px-4 py-2.5 text-sm hover:bg-stone-50 transition-colors"
+                style={{ color: '#1C0F0A' }}>
+                <User size={15} strokeWidth={1.5} />
+                Mi perfil
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 w-full px-4 py-2.5 text-sm hover:bg-stone-50 transition-colors"
