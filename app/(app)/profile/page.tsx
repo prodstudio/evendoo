@@ -26,7 +26,7 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 pb-28 lg:pb-8">
+    <div className="px-6 lg:px-10 py-8 pb-28 lg:pb-8 overflow-y-auto h-full">
       <h1 className="text-2xl font-extrabold mb-6" style={{ color: '#1C0F0A' }}>Mi perfil</h1>
 
       {/* Profile card */}

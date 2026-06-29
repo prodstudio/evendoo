@@ -49,7 +49,7 @@ export default async function EventsPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-3 max-w-2xl">
+        <div className="space-y-3 max-w-4xl">
           {events.map(ev => (
             <Link key={ev.id} href={`/events/${ev.id}`}
               className="flex items-center gap-4 p-4 rounded-2xl bg-white transition-all hover:shadow-md"

@@ -33,7 +33,8 @@ export default async function ProposalsPage() {
   const accepted = bookings?.filter(b => b.status === 'accepted') ?? []
 
   return (
-    <div className="px-6 py-8 max-w-2xl mx-auto">
+    <div className="px-6 lg:px-10 py-8 overflow-y-auto h-full">
+      <div className="max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold" style={{ color: '#1C0F0A' }}>Propuestas</h1>
         <p className="text-sm mt-1" style={{ color: '#8C7B75' }}>Solicitudes de hosts y tus próximos eventos</p>
@@ -110,6 +111,7 @@ export default async function ProposalsPage() {
           </div>
         </section>
       )}
+      </div>
     </div>
   )
 }

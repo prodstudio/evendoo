@@ -39,7 +39,7 @@ export default async function NewBookingPage({
   const price = (listing.base_price_cents / 100).toLocaleString('es-AR')
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-6 pb-28 lg:pb-8 overflow-y-auto h-full">
+    <div className="px-6 lg:px-10 py-6 pb-28 lg:pb-8 overflow-y-auto h-full">
       <Link href={`/providers/${listingId}`}
         className="inline-flex items-center gap-1 text-sm mb-6" style={{ color: '#8C7B75' }}>
         <ChevronLeft size={16} strokeWidth={1.5} />

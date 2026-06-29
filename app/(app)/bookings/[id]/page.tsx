@@ -62,7 +62,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
     [PAYMENT_STATUS.SALDO_PAGADO].includes(balancePayment.status) && !dispute
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 pb-28 lg:pb-8">
+    <div className="px-6 lg:px-10 py-6 pb-28 lg:pb-8 overflow-y-auto h-full">
       <Link href="/bookings" className="inline-flex items-center gap-1 text-sm mb-6" style={{ color: '#8C7B75' }}>
         <ChevronLeft size={16} strokeWidth={1.5} />
         Mis reservas

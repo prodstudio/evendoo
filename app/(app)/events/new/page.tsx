@@ -60,7 +60,7 @@ export default function NewEventPage() {
   const labelClass = "flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-2"
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-6 pb-28 lg:pb-8 overflow-y-auto h-full">
+    <div className="px-6 lg:px-10 py-6 pb-28 lg:pb-8 overflow-y-auto h-full">
       <Link href="/events" className="inline-flex items-center gap-1 text-sm mb-6" style={{ color: '#8C7B75' }}>
         <ChevronLeft size={16} strokeWidth={1.5} />
         Mis Eventos
