@@ -39,6 +39,9 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
     .maybeSingle()
 
   const userRole: 'host' | 'provider' = booking.host_id === user.id ? 'host' : 'provider'
+  const backHref = booking.event_id
+    ? `/events/${booking.event_id}`
+    : '/bookings'
 
   return (
     <ChatWindow
@@ -47,6 +50,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
       currentUserId={user.id}
       payment={payment}
       userRole={userRole}
+      backHref={backHref}
     />
   )
 }

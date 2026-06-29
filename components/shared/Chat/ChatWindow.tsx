@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Message } from '@/types/booking'
 import type { Payment } from '@/types/payment'
-import { Send, Paperclip, FileText, ExternalLink } from 'lucide-react'
+import { Send, Paperclip, FileText, ExternalLink, ChevronLeft } from 'lucide-react'
+import Link from 'next/link'
 import { PaymentButton } from './PaymentButton'
 import { PaymentStatusBadge } from '../PaymentStatus/PaymentStatusBadge'
 import { formatARS } from '@/lib/payments/format'
@@ -15,9 +16,10 @@ type Props = {
   currentUserId: string
   payment: Payment | null
   userRole: 'host' | 'provider'
+  backHref?: string
 }
 
-export function ChatWindow({ booking, initialMessages, currentUserId, payment, userRole }: Props) {
+export function ChatWindow({ booking, initialMessages, currentUserId, payment, userRole, backHref }: Props) {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
@@ -68,16 +70,21 @@ export function ChatWindow({ booking, initialMessages, currentUserId, payment, u
     <div className="flex flex-col h-screen max-h-screen" style={{ background: '#FDF8F3' }}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-stone-100 bg-white sticky top-0 z-10">
-        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm"
+        {backHref && (
+          <Link href={backHref} className="flex-shrink-0 p-1 -ml-1 rounded-lg" style={{ color: '#8C7B75' }}>
+            <ChevronLeft size={20} strokeWidth={1.5} />
+          </Link>
+        )}
+        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
           style={{ background: '#E8533A' }}>
           {otherName?.[0] || '?'}
         </div>
-        <div>
-          <p className="font-semibold text-sm" style={{ color: '#1C0F0A' }}>{otherName}</p>
-          <p className="text-xs" style={{ color: '#8C7B75' }}>{booking.provider_listings?.title}</p>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-sm truncate" style={{ color: '#1C0F0A' }}>{otherName}</p>
+          <p className="text-xs truncate" style={{ color: '#8C7B75' }}>{booking.provider_listings?.title}</p>
         </div>
         {payment && (
-          <div className="ml-auto">
+          <div className="ml-auto flex-shrink-0">
             <PaymentStatusBadge status={payment.status} />
           </div>
         )}

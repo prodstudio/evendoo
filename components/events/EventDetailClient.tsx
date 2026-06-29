@@ -319,32 +319,27 @@ export function EventDetailClient({ event, bookings, savedListings }: Props) {
               <div className="space-y-3">
                 {allBookings.map((b: any) => {
                   const status = STATUS_MAP[b.status] ?? STATUS_MAP.pending
+                  const providerName = b.profiles?.full_name ?? b.provider_listings?.profiles?.full_name ?? '?'
                   return (
-                    <Link key={b.id} href={`/bookings/${b.id}`}
+                    <Link key={b.id} href={`/bookings/${b.id}/chat`}
                       className="flex items-center gap-4 p-4 rounded-2xl bg-white transition-all hover:shadow-md"
                       style={{ boxShadow: '0 2px 16px rgba(28,15,10,0.06)' }}>
-                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-bold"
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
                         style={{ background: '#E8533A' }}>
-                        {b.profiles?.full_name?.[0] ?? b.provider_listings?.profiles?.full_name?.[0] ?? '?'}
+                        {providerName[0]}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold truncate text-sm" style={{ color: '#1C0F0A' }}>
-                          {b.profiles?.full_name ?? b.provider_listings?.profiles?.full_name}
+                          {providerName}
                         </p>
                         <p className="text-xs truncate" style={{ color: '#8C7B75' }}>
                           {b.provider_listings?.title}
                         </p>
                       </div>
-                      <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                          style={{ background: status.bg, color: status.color }}>
-                          {status.label}
-                        </span>
-                        <span className="text-xs flex items-center gap-1" style={{ color: '#8C7B75' }}>
-                          <MessageCircle size={10} strokeWidth={1.5} />
-                          Ver chat
-                        </span>
-                      </div>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
+                        style={{ background: status.bg, color: status.color }}>
+                        {status.label}
+                      </span>
                     </Link>
                   )
                 })}
