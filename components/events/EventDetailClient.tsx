@@ -4,15 +4,17 @@ import { useState } from 'react'
 import Link from 'next/link'
 import {
   ChevronLeft, Calendar, MapPin, Users, DollarSign, Sparkles,
-  Plus, MessageCircle, X, CheckCircle, Clock,
+  Plus, X, CheckCircle, MessageCircle,
 } from 'lucide-react'
 import { formatARS } from '@/lib/payments/format'
 import { CATEGORY_LABELS, type ProviderCategory } from '@/types/provider'
+import { ConversationsLayout } from '@/components/shared/ConversationsLayout'
 
 type Props = {
   event: any
   bookings: any[]
   savedListings: any[]
+  currentUserId: string
 }
 
 const STATUS_MAP: Record<string, { label: string; bg: string; color: string }> = {
@@ -22,7 +24,7 @@ const STATUS_MAP: Record<string, { label: string; bg: string; color: string }> =
   cancelled: { label: 'Cancelado',  bg: '#F3F4F6', color: '#6B7280' },
 }
 
-export function EventDetailClient({ event, bookings, savedListings }: Props) {
+export function EventDetailClient({ event, bookings, savedListings, currentUserId }: Props) {
   const [tab, setTab] = useState<'detalles' | 'proveedores' | 'conversaciones'>('detalles')
 
   // Track which listing_ids already have a booking (pre-filled + newly contacted)
@@ -72,7 +74,8 @@ export function EventDetailClient({ event, bookings, savedListings }: Props) {
         id: data.data.id,
         status: 'pending',
         provider_listings: listing,
-        profiles: listing.profiles,
+        provider: listing.profiles,
+        messages: [],
       }])
       setPendingContact(null)
       showToast('Solicitud enviada')
@@ -195,7 +198,32 @@ export function EventDetailClient({ event, bookings, savedListings }: Props) {
         </div>
       </div>
 
-      {/* Scrollable content */}
+      {/* Conversaciones tab — full split-view, no outer scroll */}
+      {tab === 'conversaciones' && (
+        <div className="flex-1 overflow-hidden">
+          {allBookings.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center py-16 px-6">
+                <p className="text-4xl mb-3">💬</p>
+                <p className="font-semibold mb-1" style={{ color: '#1C0F0A' }}>Sin conversaciones aún</p>
+                <p className="text-sm mb-4" style={{ color: '#8C7B75' }}>
+                  Contactá un proveedor desde la tab "Proveedores" para iniciar una conversación.
+                </p>
+                <button onClick={() => setTab('proveedores')}
+                  className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold"
+                  style={{ background: '#E8533A' }}>
+                  Ver proveedores
+                </button>
+              </div>
+            </div>
+          ) : (
+            <ConversationsLayout bookings={allBookings as any} currentUserId={currentUserId} />
+          )}
+        </div>
+      )}
+
+      {/* Detalles + Proveedores — scrollable content */}
+      {tab !== 'conversaciones' && (
       <div className="flex-1 overflow-y-auto px-6 lg:px-10 py-6 pb-28 lg:pb-8">
 
         {/* ── TAB: DETALLES ── */}
@@ -299,56 +327,8 @@ export function EventDetailClient({ event, bookings, savedListings }: Props) {
           </div>
         )}
 
-        {/* ── TAB: CONVERSACIONES ── */}
-        {tab === 'conversaciones' && (
-          <div className="max-w-2xl">
-            {allBookings.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-4xl mb-3">💬</p>
-                <p className="font-semibold mb-1" style={{ color: '#1C0F0A' }}>Sin conversaciones aún</p>
-                <p className="text-sm mb-4" style={{ color: '#8C7B75' }}>
-                  Contactá un proveedor desde la tab "Proveedores" para iniciar una conversación.
-                </p>
-                <button onClick={() => setTab('proveedores')}
-                  className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold"
-                  style={{ background: '#E8533A' }}>
-                  Ver proveedores
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {allBookings.map((b: any) => {
-                  const status = STATUS_MAP[b.status] ?? STATUS_MAP.pending
-                  const providerName = b.profiles?.full_name ?? b.provider_listings?.profiles?.full_name ?? '?'
-                  return (
-                    <Link key={b.id} href={`/bookings/${b.id}/chat`}
-                      className="flex items-center gap-4 p-4 rounded-2xl bg-white transition-all hover:shadow-md"
-                      style={{ boxShadow: '0 2px 16px rgba(28,15,10,0.06)' }}>
-                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
-                        style={{ background: '#E8533A' }}>
-                        {providerName[0]}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold truncate text-sm" style={{ color: '#1C0F0A' }}>
-                          {providerName}
-                        </p>
-                        <p className="text-xs truncate" style={{ color: '#8C7B75' }}>
-                          {b.provider_listings?.title}
-                        </p>
-                      </div>
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
-                        style={{ background: status.bg, color: status.color }}>
-                        {status.label}
-                      </span>
-                    </Link>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
       </div>
+      )}
     </div>
   )
 }

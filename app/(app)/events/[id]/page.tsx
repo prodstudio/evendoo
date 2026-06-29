@@ -22,7 +22,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const [{ data: bookings }, { data: savedListings }] = await Promise.all([
     supabase
       .from('bookings')
-      .select('*, provider_listings(title, category, base_price_cents, portfolio_urls), profiles!bookings_provider_id_fkey(full_name)')
+      .select(`
+        *,
+        provider_listings(title, category, base_price_cents, portfolio_urls),
+        provider:profiles!provider_id(full_name),
+        messages(id, body, created_at, sender_id, booking_id, attachment_url, attachment_type)
+      `)
       .eq('event_id', id)
       .order('created_at', { ascending: false }),
     supabase
@@ -37,6 +42,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       event={event}
       bookings={bookings ?? []}
       savedListings={savedListings ?? []}
+      currentUserId={user.id}
     />
   )
 }
