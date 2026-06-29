@@ -9,9 +9,9 @@ export const dynamic = 'force-dynamic'
 export default async function NewBookingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ listing?: string }>
+  searchParams: Promise<{ listing?: string; event_id?: string }>
 }) {
-  const { listing: listingId } = await searchParams
+  const { listing: listingId, event_id: preselectedEventId } = await searchParams
   if (!listingId) redirect('/marketplace')
 
   const supabase = await createClient()
@@ -35,15 +35,23 @@ export default async function NewBookingPage({
   if (!listing) redirect('/marketplace')
   if (listing.provider_id === user.id) redirect(`/providers/${listingId}`)
 
+  const preselectedEvent = preselectedEventId
+    ? (eventsRes.data ?? []).find(e => e.id === preselectedEventId) ?? null
+    : null
+
   const providerName = (listing.profiles as any)?.full_name ?? 'Proveedor'
   const price = (listing.base_price_cents / 100).toLocaleString('es-AR')
 
+  const backHref = preselectedEventId
+    ? `/events/${preselectedEventId}/providers`
+    : `/providers/${listingId}`
+
   return (
     <div className="px-6 lg:px-10 py-6 pb-28 lg:pb-8 overflow-y-auto h-full">
-      <Link href={`/providers/${listingId}`}
+      <Link href={backHref}
         className="inline-flex items-center gap-1 text-sm mb-6" style={{ color: '#8C7B75' }}>
         <ChevronLeft size={16} strokeWidth={1.5} />
-        Volver al perfil
+        {preselectedEvent ? preselectedEvent.title : 'Volver al perfil'}
       </Link>
 
       <h1 className="text-xl font-extrabold mb-1" style={{ color: '#1C0F0A' }}>
@@ -58,6 +66,7 @@ export default async function NewBookingPage({
         listingTitle={listing.title}
         providerZone={listing.zone}
         existingEvents={eventsRes.data ?? []}
+        preselectedEvent={preselectedEvent}
       />
     </div>
   )

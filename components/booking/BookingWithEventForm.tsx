@@ -20,6 +20,7 @@ type Props = {
   listingTitle: string
   providerZone: string
   existingEvents: Event[]
+  preselectedEvent?: Event | null
 }
 
 const EVENT_TYPES = [
@@ -27,10 +28,10 @@ const EVENT_TYPES = [
   'Comunión', 'Corporativo', 'Graduación', 'Social', 'Otro',
 ]
 
-export function BookingWithEventForm({ listingId, listingTitle, providerZone, existingEvents }: Props) {
+export function BookingWithEventForm({ listingId, listingTitle, providerZone, existingEvents, preselectedEvent }: Props) {
   const router = useRouter()
-  const [step, setStep] = useState<'pick' | 'quick' | 'confirm'>('pick')
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [step, setStep] = useState<'pick' | 'quick' | 'confirm'>(preselectedEvent ? 'confirm' : 'pick')
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(preselectedEvent ?? null)
 
   // Quick event form state
   const [qType, setQType] = useState('')
@@ -239,9 +240,11 @@ export function BookingWithEventForm({ listingId, listingTitle, providerZone, ex
   // ── STEP: confirm ───────────────────────────────────────────────────
   return (
     <div className="space-y-5">
-      <button onClick={() => setStep('pick')} className="text-sm" style={{ color: '#8C7B75' }}>
-        ← Cambiar evento
-      </button>
+      {!preselectedEvent && (
+        <button onClick={() => setStep('pick')} className="text-sm" style={{ color: '#8C7B75' }}>
+          ← Cambiar evento
+        </button>
+      )}
 
       {/* Selected event summary */}
       <div className="rounded-2xl p-4" style={{ background: '#F9F3EE' }}>
